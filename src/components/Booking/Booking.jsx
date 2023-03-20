@@ -10,7 +10,9 @@ const Booking = ({ tour, avgRating }) => {
   const { price, reviews,title } = tour;
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-
+  let today = new Date().toJSON();
+  today = today.slice(0,10);
+  console.log(today);
   const [booking, setBooking] = useState({
     userId: user && user._id,
     userEmail: user && user.email,
@@ -29,6 +31,7 @@ const Booking = ({ tour, avgRating }) => {
   const handleClick =async (e) => {
     e.preventDefault();
     console.log(booking);
+    let token = localStorage.getItem('token');
     try {
       if(!user || user ===undefined || user ===null) {
         return alert('please sign in')
@@ -36,7 +39,8 @@ const Booking = ({ tour, avgRating }) => {
       const res = await fetch(`${BASE_URL}/booking`,{
         method: 'POST',
         headers: {
-          "Content-type": "application/json"
+          "Content-type": "application/json",
+          "Authorization": "Bearer " + token
         },
         credentials:'include',
         body: JSON.stringify(booking)
@@ -81,11 +85,13 @@ const Booking = ({ tour, avgRating }) => {
             />
           </FormGroup>
           <FormGroup className="d-flex align-items-center gap-3">
-            <input type="date" id="bookAt" required onChange={handleChange} />
+            <input type="date" id="bookAt" required onChange={handleChange} min={today}/>
             <input
               type="number"
               placeholder="GuestSize"
               id="guestSize"
+              min="1"
+              max="10"
               required
               onChange={handleChange}
             />
